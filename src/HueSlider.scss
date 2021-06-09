@@ -1,0 +1,56 @@
+.slider {
+  width: 100%;
+  height: 10px;
+  border-radius: 2px;
+
+  /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ff3232+0,ff0000+0,fff130+17,fff130+20,45ff30+36,28fff0+50,282cff+66,ff28fb+82,ff3030+100 */
+  background: rgb(255, 50, 50); /* Old browsers */
+  background: -moz-linear-gradient(left, rgba(255, 50, 50, 1) 0%, rgba(255, 0, 0, 1) 0%, rgba(255, 241, 48, 1) 17%, rgba(255, 241, 48, 1) 20%, rgba(69, 255, 48, 1) 36%, rgba(40, 255, 240, 1) 50%, rgba(40, 44, 255, 1) 66%, rgba(255, 40, 251, 1) 82%, rgba(255, 48, 48, 1) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left, rgba(255, 50, 50, 1) 0%, rgba(255, 0, 0, 1) 0%, rgba(255, 241, 48, 1) 17%, rgba(255, 241, 48, 1) 20%, rgba(69, 255, 48, 1) 36%, rgba(40, 255, 240, 1) 50%, rgba(40, 44, 255, 1) 66%, rgba(255, 40, 251, 1) 82%, rgba(255, 48, 48, 1) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right, rgba(255, 50, 50, 1) 0%, rgba(255, 0, 0, 1) 0%, rgba(255, 241, 48, 1) 17%, rgba(255, 241, 48, 1) 20%, rgba(69, 255, 48, 1) 36%, rgba(40, 255, 240, 1) 50%, rgba(40, 44, 255, 1) 66%, rgba(255, 40, 251, 1) 82%, rgba(255, 48, 48, 1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff3232', endColorstr='#ff3030', GradientType=1); /* IE6-9 */
+
+}
+
+.handle {
+  position: relative;
+  top: -10px;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: #ff0000;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.3), inset 0 0 0 0 #000000;
+  transition: box-shadow .2s;
+}
+
+.handle.pop {
+
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, .3), inset 0 0 0 3px #000;
+}
+
+.handle:before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  margin-left: -2px;
+  background: inherit;
+  width: 4px;
+  height: 4px;
+  border-radius: 20px;
+  transition: top .2s, left .2s, margin-left .2s, height .2s, width .2s;
+}
+
+.handle.pop:before {
+  top: -50px;
+  left: 50%;
+  margin-left: -20px;
+  background: inherit;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.3);
+
+}
+
