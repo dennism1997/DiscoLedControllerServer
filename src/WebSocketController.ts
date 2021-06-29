@@ -1,5 +1,5 @@
 export enum LedMode {
-    Rain, Strobe, Cylon, Sparkle, Flash, Beat
+    Rain, Strobe, Cylon, Sparkle, Flash, Wave
 }
 
 export enum ColorMode {
@@ -15,6 +15,7 @@ export interface WebSocketMessage {
     h: number
     h2: number
     colorMode: ColorMode
+    paletteIndex: number
 }
 
 declare global {
@@ -37,12 +38,17 @@ export class WebSocketController {
         this.onErrorCallback = onErrorCallback;
         this.onOpenCallback = onOpenCallback;
         this.onMessageCallback = onMessageCallback;
+
+        if (!window.socketTimerId) {
+            // @ts-ignore
+            window.socketTimerId = setInterval(this.connect.bind(this), 5000);
+        }
     }
 
     public connect() {
         this.socket = new WebSocket(this.ip);
         this.socket.onclose = e => {
-            this.onErrorCallback(`Socket closed: ${e.reason}`);
+            this.onErrorCallback(`Socket closed`);
             if (!window.socketTimerId) {
                 // @ts-ignore
                 window.socketTimerId = setInterval(this.connect.bind(this), 5000);

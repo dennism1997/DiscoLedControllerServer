@@ -56,3 +56,9 @@
   flex-wrap: wrap;
   justify-content: flex-start;
 }
+
+.palette-select option {
+  background-repeat:no-repeat;
+  background-position:bottom left;
+  padding-left:30px;
+}
