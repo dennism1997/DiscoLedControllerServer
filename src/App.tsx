@@ -17,14 +17,20 @@ Number.prototype.clamp8 = function (): number {
     return Math.max(0, Math.min(255, Math.round(this as number)));
 }
 
-// const palettes = [
-//     ["Sunset", "palettes/Sunset_Real.png"],
-//     ["Sunconure", "palettes/bhw1_sunconure.png"],
-// ];
-
 const paletteOptions = [
-    { value: 'Sunset', label: <img alt={"Sunset"} src={"palettes/Sunset_Real.png"} height="100%" width="100%"/> },
-    { value: 'Sunconure', label: <img alt={"Sunconure"} src={"palettes/bhw1_sunconure.png"} height="100%" width="100%"/> },
+    {
+        value: 'Sunset',
+        label: <img className={"palette-option"} alt={"Sunset"} src={"palettes/Sunset_Real.png"}/>
+    }, {
+        value: 'Sunconure',
+        label: <img className={"palette-option"} alt={"Sunconure"} src={"palettes/bhw1_sunconure.png"}/>
+    }, {
+        value: 'PurpleCyan',
+        label: <img className={"palette-option"} alt={"PurpleCyan"} src={"palettes/bhw1_28.png"}/>
+    }, {
+        value: 'Blues',
+        label: <img className={"palette-option"} alt={"Blues"} src={"palettes/blues.png"}/>
+    },
 ]
 
 interface Props {
@@ -55,10 +61,10 @@ class App extends React.Component<Props, State> {
                 ledMode: LedMode.Rain,
                 modeOption: 0,
                 bpm: 120,
-                brightness: 255,
+                brightness: 20,
                 intensity: 0,
                 h: 0,
-                h2: 0,
+                h2: 128,
                 colorMode: ColorMode.Single,
                 paletteIndex: 0,
             }
@@ -84,7 +90,6 @@ class App extends React.Component<Props, State> {
             },
             event => {
                 let s = event.data.toString();
-                console.log(s);
                 if (s.includes("#")) {
                     let a = [];
                     for (let i = 0; i < s.length; i += 7) {
@@ -95,6 +100,7 @@ class App extends React.Component<Props, State> {
                         rgbStrings: a
                     })
                 } else {
+                    console.log(s);
                     let dataValues = s.split(",").map((d: string) => {
                         return parseInt(d).clamp8();
                     });
@@ -179,40 +185,37 @@ class App extends React.Component<Props, State> {
 
 
     render() {
+        const halfRgbArrayLength = Math.ceil(this.state.rgbStrings.length / 2);
         return <section className={"section pt-5"}>
             <div className={"container"}>
 
                 <h4 className={"title is-5 mb-1"}>Presets:</h4>
                 <div className={"columns"}>
                     <div className={"column is-two-fifths-tablet is-full-mobile"}>
-                        <div className={"level mt-1"}>
-                            {Object.entries(this.getPresets()).map(([key, settings], index) => {
-                                return <Button className={"m-1"} variant={"outlined"} key={index}
-                                               onClick={() => {
-                                                   this.changeAndSendSettings(settings)
-                                               }}>{key}
-                                </Button>
-                            })}
-                        </div>
+                        {Object.entries(this.getPresets()).map(([key, settings], index) => {
+                            return <Button className={"m-1"} variant={"outlined"} key={index}
+                                           onClick={() => {
+                                               this.changeAndSendSettings(settings)
+                                           }}>{key}
+                            </Button>
+                        })}
                     </div>
                 </div>
 
                 <h4 className={"title is-5 mb-1"}>Led Mode:</h4>
                 <div className={"columns"}>
                     <div className={"column is-two-fifths-tablet is-full-mobile"}>
-                        <div className={"level mt-1"}>
-                            {$enum(LedMode).getKeys().map((k, index) => {
-                                let color = this.state.settings.ledMode === LedMode[k] ? "primary" : "default";
-                                // @ts-ignore
-                                return <Button className={"m-1"} variant={"outlined"} key={index} color={color}
-                                               onClick={() => {
-                                                   this.changeAndSendSettings({
-                                                       ledMode: LedMode[k]
-                                                   })
-                                               }}>{k}
-                                </Button>
-                            })}
-                        </div>
+                        {$enum(LedMode).getKeys().map((k, index) => {
+                            let color = this.state.settings.ledMode === LedMode[k] ? "primary" : "default";
+                            // @ts-ignore
+                            return <Button className={"m-1"} variant={"outlined"} key={index} color={color}
+                                           onClick={() => {
+                                               this.changeAndSendSettings({
+                                                   ledMode: LedMode[k]
+                                               })
+                                           }}>{k}
+                            </Button>
+                        })}
                     </div>
                 </div>
                 <h4 className={"title is-6 mt-2 mb-2"}>Led Mode Option:</h4>
@@ -257,7 +260,7 @@ class App extends React.Component<Props, State> {
                     </div>
 
                     <div className={"column"}>
-                        <Input value={this.state.settings.bpm} margin="dense"
+                        <Input value={this.state.settings.bpm} defaultValue={this.state.settings.bpm} margin="dense"
                                onChange={(e) => {
                                    let bpm = parseInt(e.currentTarget.value).clamp8();
                                    if (bpm >= 90 && bpm <= 140) {
@@ -280,32 +283,33 @@ class App extends React.Component<Props, State> {
                 <h4 className={"title is-5 mb-1"}>Color Mode:</h4>
                 <div className={"columns"}>
                     <div className={"column is-two-fifths-tablet is-full-mobile"}>
-                        <div className={"level mt-1"}>
-                            {$enum(ColorMode).getKeys().map((k, index) => {
-                                let color = this.state.settings.colorMode === ColorMode[k] ? "primary" : "default";
-                                // @ts-ignore
-                                return <Button className={"m-1"} variant={"outlined"} key={index} color={color}
-                                               onClick={() => {
-                                                   this.changeAndSendSettings({
-                                                       colorMode: ColorMode[k]
-                                                   })
+                        {$enum(ColorMode).getKeys().map((k, index) => {
+                            let color = this.state.settings.colorMode === ColorMode[k] ? "primary" : "default";
+                            // @ts-ignore
+                            return <Button className={"m-1"} variant={"outlined"} key={index} color={color}
+                                           onClick={() => {
+                                               this.changeAndSendSettings({
+                                                   colorMode: ColorMode[k]
+                                               })
 
-                                               }}>{k}
-                                </Button>
-                            })}
+                                           }}>{k}
+                            </Button>
+                        })}
+                    </div>
+                </div>
+                {[ColorMode.Single, ColorMode.Complement, ColorMode.Close, ColorMode.Duo].includes(this.state.settings.colorMode) ?
+                    <>
+
+                        <h4 className={"title is-5 mt-2 mb-2"}>Color:</h4>
+                        <div className={"columns mt-2"}>
+                            <div className={"column is-three-fifths-tablet is-one-third-desktop is-full--mobile"}>
+                                <HueSlider value={this.state.settings.h} onChangeHue={(hue, debounced) => {
+                                    this.changeHue(hue, debounced);
+                                }}/>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <h4 className={"title is-5 mt-2 mb-2"}>Color:</h4>
-                <div className={"columns mt-2"}>
-                    <div className={"column is-three-fifths-tablet is-one-third-desktop is-full--mobile"}>
-                        <HueSlider value={this.state.settings.h} onChangeHue={(hue, debounced) => {
-                            this.changeHue(hue, debounced);
-                        }}/>
-                    </div>
-                </div>
-
+                    </> : null
+                }
                 {[ColorMode.Duo].includes(this.state.settings.colorMode) ?
                     <>
                         <h4 className={"title is-5 mt-2 mb-2"}>Color 2:</h4>
@@ -324,16 +328,20 @@ class App extends React.Component<Props, State> {
                         <h4 className={"title is-5 mt-2 mb-2"}>Palette:</h4>
                         <div className={"columns mt-2"}>
                             <div className={"column is-three-fifths-tablet is-one-third-desktop is-full--mobile"}>
-                               <Select value={paletteOptions[this.state.settings.paletteIndex]} options={paletteOptions}
-                                       onChange={(newValue) => {
-                                           let paletteIndex = paletteOptions.findIndex(e => {
-                                               return e.value === newValue!!.value;
-                                           });
-                                           this.changeAndSendSettings({
-                                               paletteIndex: paletteIndex
-                                           })
-                                       }}
-                               />
+                                <Select isSearchable={false} className={"palette-select-container"}
+                                        classNamePrefix={"palette-select"}
+                                        value={paletteOptions[this.state.settings.paletteIndex]}
+                                        options={paletteOptions}
+                                        onChange={(newValue) => {
+                                            let paletteIndex = paletteOptions.findIndex(e => {
+                                                return e.value === newValue!!.value;
+                                            });
+                                            console.log(paletteIndex);
+                                            this.changeAndSendSettings({
+                                                paletteIndex: paletteIndex
+                                            })
+                                        }}
+                                />
                             </div>
                         </div>
                     </> : null
@@ -385,13 +393,22 @@ class App extends React.Component<Props, State> {
 
 
                 <div className={"columns mt-3"}>
-                    <div className={"column is-two-thirds-tablet"}>
-                        <div className={"level"}>
-                            {this.state.rgbStrings.map((rgbString, i) => {
-                                return <div className={"led-box"} key={i} style={{
-                                    backgroundColor: rgbString
-                                }}/>
-                            })}
+                    <div className={"column is-full"}>
+                        <div className={"led-box-container"}>
+                            <div className={"led-box-half"}>
+                                {this.state.rgbStrings.slice(0, halfRgbArrayLength).map((rgbString, i) => {
+                                    return <div className={"led-box"} key={i} style={{
+                                        backgroundColor: rgbString
+                                    }}/>
+                                })}
+                            </div>
+                            <div className={"led-box-half"}>
+                                {this.state.rgbStrings.slice(halfRgbArrayLength, this.state.rgbStrings.length).map((rgbString, i) => {
+                                    return <div className={"led-box"} key={i} style={{
+                                        backgroundColor: rgbString
+                                    }}/>
+                                })}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -406,18 +423,33 @@ class App extends React.Component<Props, State> {
         return {
             "Cyan Drop": {
                 ledMode: LedMode.Flash,
-                modeOption: 0,
+                modeOption: 2,
                 intensity: 2,
                 colorMode: ColorMode.Single,
                 h: 128
             },
             "Red Drop": {
                 ledMode: LedMode.Flash,
-                modeOption: 0,
+                modeOption: 2,
                 intensity: 2,
                 colorMode: ColorMode.Single,
                 h: 0,
             },
+            "Red Cyan Drop": {
+                ledMode: LedMode.Flash,
+                modeOption: 2,
+                intensity: 2,
+                colorMode: ColorMode.Duo,
+                h: 0,
+                h2: 128,
+            },
+            "Red Blue Wave": {
+                ledMode: LedMode.Wave,
+                modeOption: 0,
+                intensity: 0,
+                colorMode: ColorMode.Palette,
+                paletteIndex: 0,
+            }
 
         }
     }
