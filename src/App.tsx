@@ -48,9 +48,6 @@ interface State {
 class App extends React.Component<Props, State> {
     private webSocketController: WebSocketController
 
-    private modeOptionRef: React.Ref<HTMLInputElement> = React.createRef();
-
-
     constructor(props: Readonly<Props> | Props) {
         super(props);
         this.state = {
@@ -228,14 +225,20 @@ class App extends React.Component<Props, State> {
                 </div>
                 <div className={"columns"}>
                     <div className={"column is-one-quarter-tablet is-four-fifths-mobile pt-0"}>
-                        <input className={"input"} ref={this.modeOptionRef} type={"number"} min={0}
-                               defaultValue={this.state.settings.ledMode}
-                               step={1}
-                               max={255}
-                               onChange={e => {
+                        <Input value={this.state.settings.modeOption}
+                            // defaultValue={this.state.settings.bpm}
+                               margin="dense"
+                               onChange={(e) => {
+                                   let modeOption = parseInt(e.currentTarget.value).clamp8();
                                    this.changeAndSendSettings({
-                                       modeOption: parseInt(e.currentTarget.value)
+                                       modeOption: modeOption
                                    })
+                               }}
+                               inputProps={{
+                                   step: 1,
+                                   min: 0,
+                                   max: 255,
+                                   type: 'number',
                                }}
                         />
                     </div>
@@ -260,7 +263,9 @@ class App extends React.Component<Props, State> {
                     </div>
 
                     <div className={"column"}>
-                        <Input value={this.state.settings.bpm} defaultValue={this.state.settings.bpm} margin="dense"
+                        <Input value={this.state.settings.bpm}
+                               // defaultValue={this.state.settings.bpm}
+                               margin="dense"
                                onChange={(e) => {
                                    let bpm = parseInt(e.currentTarget.value).clamp8();
                                    if (bpm >= 90 && bpm <= 140) {
@@ -443,7 +448,15 @@ class App extends React.Component<Props, State> {
                 h: 0,
                 h2: 128,
             },
-            "Red Blue Wave": {
+            "Red Blue Saw": {
+                ledMode: LedMode.Wave,
+                modeOption: 4,
+                intensity: 1,
+                colorMode: ColorMode.Duo,
+                h: 0,
+                h2: 166,
+            },
+            "Red Blue Calm Wave": {
                 ledMode: LedMode.Wave,
                 modeOption: 0,
                 intensity: 0,
