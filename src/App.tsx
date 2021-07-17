@@ -55,15 +55,16 @@ class App extends React.Component<Props, State> {
             errorNotification: "",
             rgbStrings: [],
             settings: {
-                ledMode: LedMode.Rain,
-                modeOption: 0,
-                bpm: 120,
-                brightness: 20,
+                ledMode: LedMode.Wave,
+                modeOption: 11,
+                bpm: 123,
+                brightness: 50,
                 intensity: 0,
                 h: 0,
                 h2: 128,
-                colorMode: ColorMode.Single,
+                colorMode: ColorMode.Palette,
                 paletteIndex: 0,
+                sendLedsSocket: 1,
             }
         };
 
@@ -113,6 +114,7 @@ class App extends React.Component<Props, State> {
                             h2: dataValues[6],
                             colorMode: dataValues[7],
                             paletteIndex: dataValues[8],
+                            sendLedsSocket: dataValues[9]
                         }
                     })
                 }
@@ -164,7 +166,7 @@ class App extends React.Component<Props, State> {
     getModeOptionHelpText(): string[] {
         switch (this.state.settings.ledMode) {
             case LedMode.Rain:
-                return ["0-2 forward, 3-4 backwards, >5 random"];
+                return ["0-2 forward, 3-4 backwards, between 5 and 16 for longer wait, more is random"];
             case LedMode.Strobe:
                 return ["0 for fixed pattern, 1 for random, 2 for forward, 3 for backwards"];
             case LedMode.Cylon:
@@ -174,7 +176,7 @@ class App extends React.Component<Props, State> {
             case LedMode.Flash:
                 return ["determines the time the leds are on"];
             case LedMode.Wave:
-                return ["0, 1 or 2 for sine wave. 3, 4 or 5 for sawtooth wave", "6, 7 or 8 for inverse sawtooth wave. 9 for triangle wave"]
+                return ["0, 1 or 2 for sine wave. 3, 4 or 5 for sawtooth wave", "6, 7 or 8 for inverse sawtooth wave. 9 for triangle wave", "From 10 same but slower"]
             default:
                 return [];
         }
@@ -264,7 +266,7 @@ class App extends React.Component<Props, State> {
 
                     <div className={"column"}>
                         <Input value={this.state.settings.bpm}
-                               // defaultValue={this.state.settings.bpm}
+                            // defaultValue={this.state.settings.bpm}
                                margin="dense"
                                onChange={(e) => {
                                    let bpm = parseInt(e.currentTarget.value).clamp8();
@@ -374,14 +376,13 @@ class App extends React.Component<Props, State> {
                 <h4 className={"title is-5 mt-2 mb-2"}>Brightness:</h4>
                 <div className={"columns"}>
                     <div className={"column is-three-fifths-tablet is-one-third-desktop is-full-mobile px-4"}>
-                        <Slider min={0} max={255} step={1}
+                        <Slider min={1} max={255} step={1}
                                 value={this.state.settings.brightness}
                                 valueLabelDisplay={"auto"}
                                 onChange={(_, brightness) => {
                                     this.changeAndSendSettings({
                                         brightness: (brightness as number).clamp8()
                                     }, true)
-
                                 }}
                                 onChangeCommitted={(_, brightness) => {
                                     this.changeAndSendSettings({
@@ -420,6 +421,25 @@ class App extends React.Component<Props, State> {
                 {this.state.notification !== null && this.state.notification.length > 0}
                 <p>Message: <span>{this.state.notification}</span></p>
                 <p>Error Message: <span>{this.state.errorNotification}</span></p>
+
+                <h4 className={"title is-5 mb-1 mt-4"}>Advanced:</h4>
+                <h5>Send Leds Over Socket:</h5>
+                <div className={"columns"}>
+                    <div className={"column is-two-fifths-tablet is-full-mobile"}>
+                        <Button className={"mr-3 mt-2"} variant={"outlined"} color={(this.state.settings.sendLedsSocket > 0 ? "primary" : "default")}
+                                onClick={() => {
+                                    this.changeAndSendSettings({
+                                        sendLedsSocket: 1
+                                    })
+                                }}>On</Button>
+                        <Button className={"mr-3 mt-2"} variant={"outlined"} color={(this.state.settings.sendLedsSocket > 0 ? "default" : "primary")}
+                                onClick={() => {
+                                    this.changeAndSendSettings({
+                                        sendLedsSocket: 0
+                                    })
+                                }}>Off</Button>
+                    </div>
+                </div>
             </div>
         </section>;
     }

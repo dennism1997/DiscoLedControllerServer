@@ -1,5 +1,5 @@
 export enum LedMode {
-    Rain, Strobe, Cylon, Sparkle, Flash, Wave
+    Rain, Strobe, Cylon, Sparkle, Flash, Wave, Constant
 }
 
 export enum ColorMode {
@@ -16,6 +16,7 @@ export interface WebSocketMessage {
     h2: number
     colorMode: ColorMode
     paletteIndex: number
+    sendLedsSocket: number
 }
 
 declare global {
