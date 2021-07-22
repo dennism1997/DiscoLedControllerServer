@@ -25,6 +25,9 @@ const paletteOptions = [
         value: 'Sunconure',
         label: <img className={"palette-option"} alt={"Sunconure"} src={"palettes/bhw1_sunconure.png"}/>
     }, {
+        value: 'PurpleRed',
+        label: <img className={"palette-option"} alt={"PurpleRed"} src={"palettes/bhw1_purplered.png"}/>
+    }, {
         value: 'PurpleCyan',
         label: <img className={"palette-option"} alt={"PurpleCyan"} src={"palettes/bhw1_28.png"}/>
     }, {
@@ -192,7 +195,12 @@ class App extends React.Component<Props, State> {
                 <div className={"columns"}>
                     <div className={"column is-two-fifths-tablet is-full-mobile"}>
                         {Object.entries(this.getPresets()).map(([key, settings], index) => {
-                            return <Button className={"m-1"} variant={"outlined"} key={index}
+                            let color = "default";
+                            if (key.toLocaleLowerCase().includes("drop")) {
+                                color = "secondary"
+                            }
+                            // @ts-ignore
+                            return <Button className={"m-1"} color={color} variant={"outlined"} key={index}
                                            onClick={() => {
                                                this.changeAndSendSettings(settings)
                                            }}>{key}
@@ -210,7 +218,8 @@ class App extends React.Component<Props, State> {
                             return <Button className={"m-1"} variant={"outlined"} key={index} color={color}
                                            onClick={() => {
                                                this.changeAndSendSettings({
-                                                   ledMode: LedMode[k]
+                                                   ledMode: LedMode[k],
+                                                   modeOption: 0,
                                                })
                                            }}>{k}
                             </Button>
@@ -446,27 +455,53 @@ class App extends React.Component<Props, State> {
 
     getPresets(): { [key: string]: Partial<WebSocketMessage> } {
         return {
+            "Drop Flash": {
+                ledMode: LedMode.Flash,
+                modeOption: 2,
+                intensity: 4,
+            },
             "Cyan Drop": {
                 ledMode: LedMode.Flash,
                 modeOption: 2,
-                intensity: 2,
+                intensity: 4,
                 colorMode: ColorMode.Single,
                 h: 128
             },
             "Red Drop": {
                 ledMode: LedMode.Flash,
                 modeOption: 2,
-                intensity: 2,
+                intensity: 4,
                 colorMode: ColorMode.Single,
                 h: 0,
             },
             "Red Cyan Drop": {
                 ledMode: LedMode.Flash,
                 modeOption: 2,
-                intensity: 2,
+                intensity: 4,
                 colorMode: ColorMode.Duo,
                 h: 0,
                 h2: 128,
+            },
+            "Drop Wave": {
+                ledMode: LedMode.Wave,
+                modeOption: 5,
+                intensity: 4,
+            },
+            "Red Green Strobe": {
+                ledMode: LedMode.Strobe,
+                modeOption: 0,
+                intensity: 0,
+            },
+            "Strobe Drop": {
+                ledMode: LedMode.Strobe,
+                modeOption: 1,
+                intensity: 2,
+            },
+            "Duo Wave": {
+                ledMode: LedMode.Wave,
+                modeOption: 5,
+                intensity: 1,
+                colorMode: ColorMode.Duo,
             },
             "Red Blue Saw": {
                 ledMode: LedMode.Wave,
@@ -478,7 +513,7 @@ class App extends React.Component<Props, State> {
             },
             "Red Blue Calm Wave": {
                 ledMode: LedMode.Wave,
-                modeOption: 0,
+                modeOption: 1,
                 intensity: 0,
                 colorMode: ColorMode.Palette,
                 paletteIndex: 0,

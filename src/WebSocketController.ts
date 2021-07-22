@@ -47,6 +47,7 @@ export class WebSocketController {
     }
 
     public connect() {
+        delete this.socket;
         this.socket = new WebSocket(this.ip);
         this.socket.onclose = e => {
             this.onErrorCallback(`Socket closed`);
