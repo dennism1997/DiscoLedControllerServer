@@ -11,6 +11,10 @@ declare global {
     interface Number {
         clamp8(): number;
     }
+
+    interface Window {
+        loopInterval: number
+    }
 }
 // eslint-disable-next-line no-extend-native
 Number.prototype.clamp8 = function (): number {
@@ -45,6 +49,19 @@ interface State {
     errorNotification: string;
     rgbStrings: string[];
     settings: WebSocketMessage;
+    loop: boolean;
+}
+
+function getNewLoopSettings(): Partial<WebSocketMessage> {
+    return {
+        ledMode: $enum(LedMode).getValues()[Math.floor(Math.random() * $enum(LedMode).getKeys().length)],
+        modeOption: Math.floor(Math.random() * 6),
+        intensity: Math.floor(Math.random() * 2),
+        h: Math.floor(Math.random() * 256).clamp8(),
+        h2: Math.floor(Math.random() * 256).clamp8(),
+        colorMode: $enum(ColorMode).getValues()[Math.floor(Math.random() * $enum(ColorMode).getKeys().length)],
+        paletteIndex: Math.floor(Math.random() * 5)
+    }
 }
 
 
@@ -68,7 +85,8 @@ class App extends React.Component<Props, State> {
                 colorMode: ColorMode.Palette,
                 paletteIndex: 0,
                 sendLedsSocket: 1,
-            }
+            },
+            loop: true,
         };
 
         this.webSocketController = new WebSocketController(
@@ -428,6 +446,34 @@ class App extends React.Component<Props, State> {
                     </div>
                 </div>
                 {this.state.notification !== null && this.state.notification.length > 0}
+
+                <h4 className={"title is-5 mb-1 mt-4"}>Loop through all options:</h4>
+                <div className={"columns"}>
+                    <div className={"column is-two-fifths-tablet is-full-mobile"}>
+                        <Button className={"mr-3 mt-2"} variant={"outlined"} color={(this.state.loop ? "primary" : "default")}
+                                onClick={() => {
+                                    if(!window.loopInterval) {
+                                        // @ts-ignore
+                                        window.loopInterval = setInterval(this.changeAndSendSettings.bind(this, getNewLoopSettings()), 60 * 1000)
+                                    } else {
+                                        this.changeAndSendSettings(getNewLoopSettings())
+                                    }
+                                    this.setState({
+                                        loop: true
+                                    })
+                                }}>Loop On</Button>
+                        <Button className={"mr-3 mt-2"} variant={"outlined"} color={(this.state.loop ? "default" : "primary")}
+                                onClick={() => {
+                                    if (window.loopInterval) {
+                                        window.clearInterval(window.loopInterval)
+                                    }
+                                    this.setState({
+                                        loop: false
+                                    })
+                                }}>Loop Off</Button>
+                    </div>
+                </div>
+
                 <p>Message: <span>{this.state.notification}</span></p>
                 <p>Error Message: <span>{this.state.errorNotification}</span></p>
 
@@ -494,8 +540,13 @@ class App extends React.Component<Props, State> {
             },
             "Strobe Drop": {
                 ledMode: LedMode.Strobe,
-                modeOption: 1,
+                modeOption: 0,
                 intensity: 2,
+            },
+            "Strobe Drop Hard": {
+                ledMode: LedMode.Strobe,
+                modeOption: 0,
+                intensity: 3,
             },
             "Duo Wave": {
                 ledMode: LedMode.Wave,
